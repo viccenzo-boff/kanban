@@ -27,6 +27,7 @@ import { alpha } from '@mui/material/styles';
 // React
 import { useEffect, useState, useMemo, useCallback, memo, useRef } from 'react';
 import { io } from 'socket.io-client';
+import { toast } from 'react-toastify';
 
 // UI Personalizado
 import Loading from '@/components/common/Loading';
@@ -37,6 +38,7 @@ import ColunaFormulario from "../../components/tarefas/ColunaFormulario";
 // Utils
 import authAxios from "@/utils/authAxios";
 import catchAuthAxios from '@/utils/catchAxios';
+import { getToken } from '@/utils/token';
 import columnType from "@/utils/columnType";
 import capitalizeFirstLetter from "@/utils/capitalizeFirstLetter";
 import { formatDate } from "@/utils/formatDate";
@@ -276,10 +278,24 @@ export default function TarefasPage({ espaco, writePermission, tarefaIdInicial =
     const socket = io({
       path: '/api/socketio',
       addTrailingSlash: false,
+      auth: { token: getToken() },
+      reconnectionAttempts: 5,
     });
 
     const handleConnect = () => {
       socket.emit('join_quadro', { id_espaco: idEspaco });
+    };
+
+    // O servidor marca falha de credencial com o código NAO_AUTORIZADO.
+    // Sem essa distinção, uma oscilação de rede levaria o usuário ao login.
+    const handleConnectError = error => {
+      if (error?.data?.code !== 'NAO_AUTORIZADO') {
+        return;
+      }
+
+      socket.disconnect();
+      toast.error(error.message);
+      router.push('/usuarios/login');
     };
 
     const handleTarefas = payload => {
@@ -418,6 +434,7 @@ export default function TarefasPage({ espaco, writePermission, tarefaIdInicial =
     };
 
     socket.on('connect', handleConnect);
+    socket.on('connect_error', handleConnectError);
     socket.on('tarefas', handleTarefas);
 
     return () => {
@@ -425,6 +442,7 @@ export default function TarefasPage({ espaco, writePermission, tarefaIdInicial =
         socket.emit('leave_quadro', { id_espaco: idEspaco });
       }
       socket.off('connect', handleConnect);
+      socket.off('connect_error', handleConnectError);
       socket.off('tarefas', handleTarefas);
       socket.disconnect();
     };
