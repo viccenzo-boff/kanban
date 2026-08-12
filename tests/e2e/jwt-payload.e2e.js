@@ -7,9 +7,23 @@ const { registrar, encerrar, post, get, criarUsuario, criarTarefa } = require('.
 // pessoa que interceptar o token consegue fazer.
 const lerPayload = (token) => JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
 
+const contemHashBcrypt = (valor) => /\$2[aby]?\$\d{2}\$/.test(JSON.stringify(valor ?? {}));
+
 const main = async () => {
   const usuario = await criarUsuario('jwt');
   const { dados, token, espaco } = usuario;
+
+  // O cadastro devolvia o resultado de um RETURNING * na tabela usuario,
+  // incluindo o hash da senha.
+  const cadastro = await post('/api/usuarios/novo', {
+    nome: 'Cadastro Teste',
+    username: `cad${String(Date.now()).slice(-9)}`.slice(0, 15),
+    email: `cad${String(Date.now()).slice(-9)}@exemplo.test`,
+    senha: 'SenhaForte123',
+  });
+  registrar('T0 cadastro nao devolve hash de senha na resposta',
+    cadastro.status === 201 && !contemHashBcrypt(cadastro.json),
+    `status ${cadastro.status} :: campos=${Object.keys(cadastro.json?.data ?? {}).join(',')}`);
 
   const payload = lerPayload(token);
   const chaves = Object.keys(payload).sort();

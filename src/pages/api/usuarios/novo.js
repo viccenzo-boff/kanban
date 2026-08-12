@@ -86,7 +86,16 @@ const handler = async (req, res) => {
             console.log('Erro ao criar espaço pessoal padrão:', error);
         }
 
-        return res.status(201).json(defaultResponse('Usuário criado com sucesso', user));
+        // Projeção explícita: `user` vem de um RETURNING * e carrega o hash da
+        // senha. Devolver a linha crua colocaria o hash na resposta HTTP.
+        const usuarioCriado = {
+            id: user.id,
+            nome: user.nome,
+            email: user.email,
+            username: user.username,
+        };
+
+        return res.status(201).json(defaultResponse('Usuário criado com sucesso', usuarioCriado));
     } catch (error) {
         console.log(error);
         return res.status(500).json(defaultResponse('Erro ao criar usuário. Contate o suporte'));
