@@ -9,6 +9,9 @@
     "db:migrate": "node src/database/migrate.js",
     "db:sync": "npm run db:migrate && npx prisma generate && npx prisma db pull && npx prisma generate",
     "lint": "eslint",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "dev:test": "docker exec kanban-app-dev npm test",
     "dev:up": "docker compose up kanban-app-dev -d",
     "dev:logs": "docker logs -f kanban-app-dev",
     "dev:down": "docker compose down",
@@ -48,6 +51,7 @@
   },
   "devDependencies": {
     "eslint": "^8.57.1",
-    "eslint-config-next": "14.2.30"
+    "eslint-config-next": "14.2.30",
+    "vitest": "^3.2.7"
   }
 }
