@@ -50,3 +50,4 @@ backup
 # Fork local — arquivos de override que não devem ir para o upstream
 docker-compose.override.yml
 CLAUDE.md
+ROADMAP.md
