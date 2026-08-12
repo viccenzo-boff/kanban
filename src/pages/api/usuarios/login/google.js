@@ -71,10 +71,9 @@ const handler = async (req, res) => {
         }
     }
 
-    const { senha: dbPassword, ...safeUser } = user;
-
+    // Mesmo critério do login por senha: apenas o id no payload.
     const token = jwt.sign(
-        { ...safeUser },
+        { id: user.id },
         process.env.JWT_SECRET,
         { expiresIn: '8h' }
     );

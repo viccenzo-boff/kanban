@@ -32,7 +32,7 @@ const handler = async (req, res) => {
 
         const user = usernameFound ? userByUsername.rows[0] : userByEmail.rows[0];
 
-        const { senha: dbPassword, ...safeUser } = user;
+        const dbPassword = user.senha;
 
         if(!dbPassword){
             return res.status(401).json(defaultResponse(MENSAGEM_ERRO));
@@ -44,8 +44,11 @@ const handler = async (req, res) => {
             return res.status(401).json(defaultResponse(MENSAGEM_ERRO));
         }
         
+        // O payload carrega apenas o id: JWT é base64, não criptografia, e o
+        // authMiddleware recarrega o usuário do banco a cada requisição. Incluir
+        // a linha inteira exporia toda coluna nova de `usuario` automaticamente.
         const token = jwt.sign(
-            { ...safeUser },
+            { id: user.id },
             process.env.JWT_SECRET,
             { expiresIn: '8h' }
         );
