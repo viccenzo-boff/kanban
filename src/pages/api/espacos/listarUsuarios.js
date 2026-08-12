@@ -99,4 +99,3 @@ const handler = async (req, res) => {
 };
 
 export default authMiddleware(handler);
-// export default handler;
