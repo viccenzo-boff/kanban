@@ -74,7 +74,7 @@ const handler = async (req, res) => {
                 return res.status(404).json(defaultResponse('Responsável não encontrado!'));
             }
 
-            const responsavelPertenceAoEspaco = userBelongsToSpace(dadosForm.id_espaco, dadosForm.id_responsavel);
+            const responsavelPertenceAoEspaco = await userBelongsToSpace(dadosForm.id_espaco, dadosForm.id_responsavel);
 
             if(responsavelPertenceAoEspaco.belongs === false){
                 return res.status(403).json(defaultResponse('Usuário não pertence a este espaço!'));

@@ -45,11 +45,12 @@ const userBelongsToSpace = async (idEspaco, idUser) => {
         }
 
         // Usuário pertence ao espaço
-        client.query('COMMIT');
-
-        return true;
+        return {
+            error: false,
+            belongs: true,
+            espaco: espaco,
+        }
     } catch (error) {
-        client.query('ROLLBACK');
         console.log('Erro ao verificar permissões de usuário: ', error);
         return {
             error: true,
