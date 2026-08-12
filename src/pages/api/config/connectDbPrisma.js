@@ -1,23 +1,15 @@
 import { PrismaClient } from "@prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
-import { Pool } from "pg";
+
+import db from "@/pages/api/config/connectDB";
 
 const globalForPrisma = globalThis;
 
-const pool =
-  globalForPrisma.prismaPgPool ??
-  new Pool({
-    connectionString: process.env.DATABASE_URL,
-    max: 10,
-    idleTimeoutMillis: 30000,
-    connectionTimeoutMillis: 5000,
-  });
-
-if (process.env.NODE_ENV !== "production") {
-  globalForPrisma.prismaPgPool = pool;
-}
-
-const adapter = new PrismaPg(pool);
+// Reaproveita o pool de connectDB em vez de abrir um segundo.
+// Antes, cada módulo criava um Pool com max 10 apontando para o mesmo banco,
+// somando 20 conexões possíveis por instância contra o limite padrão de 100 do
+// Postgres — teto atingido com poucas instâncias.
+const adapter = new PrismaPg(db);
 
 const prisma =
   globalForPrisma.prisma ??
