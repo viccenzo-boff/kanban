@@ -14,8 +14,10 @@ const authMiddleware = handler => async (req, res) => {
 
         const tokenData = jwt.verify(token, process.env.JWT_SECRET);
 
+        // Colunas explícitas: com SELECT * o hash da senha circularia em
+        // req.user por toda a aplicação, a um res.json(req.user) de vazar.
         const userResult = await db.query({
-            text: "SELECT * FROM usuario WHERE id = $1",
+            text: "SELECT id, nome, email, username, ativo, avatar_public_url FROM usuario WHERE id = $1",
             values: [tokenData.id]
         });
 
