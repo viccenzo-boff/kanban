@@ -8,7 +8,15 @@
     "start": "npm run db:migrate && next start",
     "db:migrate": "node src/database/migrate.js",
     "db:sync": "npm run db:migrate && npx prisma generate && npx prisma db pull && npx prisma generate",
-    "lint": "eslint"
+    "lint": "eslint",
+    "dev:up": "docker compose up kanban-app-dev -d",
+    "dev:logs": "docker logs -f kanban-app-dev",
+    "dev:down": "docker compose down",
+    "dev:restart": "docker compose restart kanban-app-dev",
+    "dev:sh": "docker exec -it kanban-app-dev sh",
+    "dev:lint": "docker exec kanban-app-dev npm run lint",
+    "dev:migrate": "docker exec -it kanban-app-dev npm run db:migrate",
+    "dev:psql": "docker exec -it kanban-db psql -U kanban -d kanban"
   },
   "dependencies": {
     "@dnd-kit/helpers": "^0.5.0",
