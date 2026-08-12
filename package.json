@@ -27,7 +27,7 @@
     "@mui/material": "^7.0.0",
     "@mui/x-data-grid": "^8.x.x",
     "@prisma/adapter-pg": "^7.8.0",
-    "@prisma/client": "^7.8.0",
+    "@prisma/client": "^7.9.1",
     "amqplib": "^2.0.1",
     "axios": "^1.16.0",
     "bcrypt": "^6.0.0",
