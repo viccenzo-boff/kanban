@@ -21,13 +21,12 @@ Exemplos:
 Antes de alterar arquivos, leia:
 
 - `AGENTS.md`
-- `DOCS.md`
 - migrations em `src/database/migrations`
 - páginas relacionadas em `src/pages`
 - APIs relacionadas em `src/pages/api`
 - componentes existentes similares
 - utilitários de API/autenticação
-- componentes compartilhados, especialmente `src/components/Loading`
+- componentes compartilhados, especialmente `src/components/common/Loading.jsx`
 
 ## Regra de fonte da verdade
 
@@ -271,7 +270,7 @@ const [isLoading, setIsLoading] = useState(false);
 Quando houver carregamento principal da página, usar o componente:
 
 ```js
-import Loading from '@/components/Loading';
+import Loading from '@/components/common/Loading';
 ```
 
 Deve renderizar `Loading` conforme o padrão atual do projeto.
@@ -415,7 +414,7 @@ Ao finalizar:
 * formulários recebem `mode` e `initialValues`
 * formulários usam `reset(initialValues ? initialValues : defaultValues)`
 * telas usam `isLoading`
-* telas usam `src/components/Loading`
+* telas usam `src/components/common/Loading.jsx`
 * feedback usa `toast`
 * delete usa confirmação com Dialog, se implementado
 * rotas privadas usam `authAxios`

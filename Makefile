@@ -4,7 +4,7 @@ dev-up:
 	([ -d node_modules ] || npm ci) && docker compose up kanban-app-dev -d
 	docker logs -f kanban-app-dev
 dev-migrate:
-	docker exec -it kanban-app-dev npm run migrate
+	docker exec -it kanban-app-dev npm run db:migrate
 
 # Produção
 build:
@@ -17,11 +17,7 @@ up:
 	docker compose up kanban-app -d
 	docker logs -f kanban-app
 migrate:
-	docker exec -it kanban-app npm run migrate
-
-# Realizar backup
-bkp:
-	sudo bash src/database/backup.sh
+	docker exec -it kanban-app npm run db:migrate
 
 # Derrubar containers
 down:
