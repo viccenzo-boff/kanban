@@ -49,6 +49,10 @@ import { getBottomNavigationActionUtilityClass } from "@mui/material/BottomNavig
 
 const hoverOpacity = 0.5;
 
+// O join faz consulta no banco antes de confirmar; a margem cobre isso sem
+// deixar o usuário sem resposta caso o socket caia antes do ack voltar.
+const JOIN_TIMEOUT_MS = 5000;
+
 const scrollbarSx = {
   scrollbarWidth: 'thin',
   scrollbarColor: (theme) => `${alpha(theme.palette.text.primary, 0.32)} transparent`,
@@ -282,8 +286,42 @@ export default function TarefasPage({ espaco, writePermission, tarefaIdInicial =
       reconnectionAttempts: 5,
     });
 
+    // Um join recusado não derruba a conexão: o quadro apenas para de receber
+    // atualizações, sem nada na tela explicando por quê. O ack transforma esse
+    // silêncio em aviso. Só avisa uma vez por montagem, senão cada tentativa de
+    // reconexão repetiria o toast.
+    let jaAvisouJoinRecusado = false;
+
+    const avisarJoinRecusado = mensagem => {
+      if (jaAvisouJoinRecusado) {
+        return;
+      }
+
+      jaAvisouJoinRecusado = true;
+      toast.error(mensagem);
+    };
+
     const handleConnect = () => {
-      socket.emit('join_quadro', { id_espaco: idEspaco });
+      socket
+        .timeout(JOIN_TIMEOUT_MS)
+        .emit('join_quadro', { id_espaco: idEspaco }, (erro, resposta) => {
+          // `erro` aqui é estouro do timeout — inclui o caso de o socket cair
+          // antes de o ack voltar.
+          if (erro) {
+            avisarJoinRecusado('Não foi possível sincronizar o quadro em tempo real. Recarregue a página.');
+            return;
+          }
+
+          if (resposta?.ok === true) {
+            return;
+          }
+
+          avisarJoinRecusado(
+            resposta?.motivo === 'SEM_PERMISSAO'
+              ? 'Você não tem acesso a este quadro. As atualizações em tempo real ficarão indisponíveis.'
+              : 'Não foi possível sincronizar o quadro em tempo real. Recarregue a página.'
+          );
+        });
     };
 
     // O servidor marca falha de credencial com o código NAO_AUTORIZADO.

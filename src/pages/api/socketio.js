@@ -109,12 +109,20 @@ export default async function SocketHandler(req, res) {
   io.on("connection", (socket) => {
     const user = socket.data.user;
 
-    socket.on("join_quadro", async ({ id_espaco } = {}) => {
+    socket.on("join_quadro", async ({ id_espaco } = {}, ack) => {
+      // O ack só existe se o cliente passou callback no emit. Clientes antigos
+      // emitem sem callback, então responder é sempre opcional.
+      const responder = (resposta) => {
+        if (typeof ack === 'function') {
+          ack(resposta);
+        }
+      };
+
       const room = getQuadroRoom(id_espaco);
 
       if (!room) {
         console.error(`${socket.id} tentou entrar em uma room com ID de espaço inválido`);
-        return;
+        return responder({ ok: false, motivo: 'ID_INVALIDO' });
       }
 
       // Sem vínculo com o espaço não há entrada na room, mesmo com token válido.
@@ -123,10 +131,12 @@ export default async function SocketHandler(req, res) {
 
       if (vinculo.belongs !== true) {
         console.error(`Usuário ${user.id} tentou entrar no espaço ${id_espaco} sem permissão`);
-        return;
+        return responder({ ok: false, motivo: 'SEM_PERMISSAO' });
       }
 
       socket.join(room);
+
+      return responder({ ok: true });
     });
 
     socket.on("leave_quadro", ({ id_espaco } = {}) => {

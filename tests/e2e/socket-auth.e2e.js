@@ -9,9 +9,18 @@ const {
 const JOIN_MS = 2000;        // margem para o join (faz roundtrip no banco)
 const RECEBIMENTO_MS = 5000; // margem para o NOTIFY chegar
 
+// O upgrade para WebSocket é derrubado pelo servidor Next (`transport close`
+// poucos ms após o connect). Confirmado em Next 14 dev, Next 16 dev e Next 16
+// produção standalone — é defeito da integração do Socket.IO com o Next, não
+// do upgrade nem da autenticação. Em uso real o cliente permanece em polling,
+// que funciona. Fixar o transporte aqui mantém estes testes medindo o que eles
+// existem para medir — autorização — em vez de falharem por queda de
+// transporte. Ver ROADMAP.md, P7.
+const TRANSPORTES = ['polling'];
+
 const tentarConectar = (auth) =>
   new Promise((resolve) => {
-    const socket = io(BASE, { path: SOCKET_PATH, addTrailingSlash: false, auth, reconnection: false });
+    const socket = io(BASE, { path: SOCKET_PATH, addTrailingSlash: false, auth, reconnection: false, transports: TRANSPORTES });
     const done = (resultado) => { socket.close(); resolve(resultado); };
     socket.on('connect', () => done({ conectou: true }));
     socket.on('connect_error', (err) => done({ conectou: false, mensagem: err.message, codigo: err?.data?.code }));
@@ -21,7 +30,7 @@ const tentarConectar = (auth) =>
 // Conecta e entra na room, coletando os eventos recebidos.
 const abrirQuadro = (token, idEspaco) =>
   new Promise((resolve, reject) => {
-    const socket = io(BASE, { path: SOCKET_PATH, addTrailingSlash: false, auth: { token }, reconnection: false });
+    const socket = io(BASE, { path: SOCKET_PATH, addTrailingSlash: false, auth: { token }, reconnection: false, transports: TRANSPORTES });
     const eventos = [];
     socket.on('tarefas', (p) => eventos.push(p));
     socket.on('connect_error', (e) => reject(new Error('connect_error: ' + e.message)));
@@ -31,6 +40,22 @@ const abrirQuadro = (token, idEspaco) =>
       resolve({ socket, eventos, conectado: () => socket.connected });
     });
     setTimeout(() => reject(new Error('timeout ao abrir quadro')), 12000);
+  });
+
+// Igual ao abrirQuadro, mas passando callback de ack — é assim que o cliente
+// real emite. `abrirQuadro` continua emitindo sem callback de propósito, para
+// provar que o servidor não quebra com cliente antigo.
+const entrarNoQuadroComAck = (token, idEspaco) =>
+  new Promise((resolve, reject) => {
+    const socket = io(BASE, { path: SOCKET_PATH, addTrailingSlash: false, auth: { token }, reconnection: false, transports: TRANSPORTES });
+    socket.on('connect_error', (e) => reject(new Error('connect_error: ' + e.message)));
+    socket.on('connect', () => {
+      socket.emit('join_quadro', { id_espaco: idEspaco }, (resposta) => {
+        socket.close();
+        resolve(resposta);
+      });
+    });
+    setTimeout(() => reject(new Error('timeout esperando ack do join_quadro')), 12000);
   });
 
 const main = async () => {
@@ -85,6 +110,20 @@ const main = async () => {
   }, alice.token);
   registrar('T6 responsavel de FORA do espaco e barrado (403)', responsavelDeFora.status === 403,
     `status ${responsavelDeFora.status} :: ${responsavelDeFora.json?.mensagem}`);
+
+  // ---------- Ack do join_quadro ----------
+  // Sem ack a recusa era silenciosa: o quadro parava de atualizar sem aviso.
+  const ackProprio = await entrarNoQuadroComAck(alice.token, alice.espaco.id);
+  registrar('T7 join no proprio espaco confirma com ok', ackProprio?.ok === true,
+    JSON.stringify(ackProprio));
+
+  const ackAlheio = await entrarNoQuadroComAck(alice.token, bob.espaco.id);
+  registrar('T8 join em espaco alheio devolve SEM_PERMISSAO',
+    ackAlheio?.ok === false && ackAlheio?.motivo === 'SEM_PERMISSAO', JSON.stringify(ackAlheio));
+
+  const ackInvalido = await entrarNoQuadroComAck(alice.token, 'nao-e-id');
+  registrar('T9 join com ID invalido devolve ID_INVALIDO',
+    ackInvalido?.ok === false && ackInvalido?.motivo === 'ID_INVALIDO', JSON.stringify(ackInvalido));
 
   encerrar();
 };
