@@ -46,7 +46,7 @@ const authMiddleware = handler => async (req, res) => {
             return res.status(401).json(defaultResponse(MESSAGE));
         }
         
-        console.log('Erro ao autenticar rota', error);
+        console.error('Erro ao autenticar rota', error);
         return res.status(500).json(defaultResponse('Erro ao autenticar rota. Contate o suporte!'));
     }
 }

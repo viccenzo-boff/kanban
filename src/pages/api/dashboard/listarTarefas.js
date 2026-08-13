@@ -36,7 +36,7 @@ const handler = async (req, res) => {
 
     return res.status(200).json(defaultResponse('Tarefas da dashboard listadas com sucesso', result.rows));
   } catch (error) {
-    console.log(error);
+    console.error(error);
     return res.status(500).json(defaultResponse('Erro ao carregar dados da dashboard'));
   }
 };

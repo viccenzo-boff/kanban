@@ -27,7 +27,7 @@ const hasRouteAccess = (isAuthenticated, route) => {
         return true;
 
     } catch (error) {
-        console.log(`Erro na verificação de rota ${route}`, error);
+        console.error(`Erro na verificação de rota ${route}`, error);
         return false;
     }
 };

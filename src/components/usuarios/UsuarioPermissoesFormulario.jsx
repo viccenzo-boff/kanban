@@ -48,7 +48,7 @@ const PermissoesFormulario = ({ usuario, espaco, readonly }) => {
                 reset(formObj);
                 setPermissoes(localPermissoes);
             } catch (error) {
-                console.log(error);
+                console.error(error);
                 catchAuthAxios(error, 'Erro ao buscar permissões de usuário. Contate o suporte');
             } finally {
                 setIsLoading(false);
@@ -77,7 +77,7 @@ const PermissoesFormulario = ({ usuario, espaco, readonly }) => {
 
             toast.success(res.data.mensagem);
         } catch (error) {
-            console.log(error);
+            console.error(error);
             catchAuthAxios(error, 'Erro ao salvar permissões!');
         } finally {
             setIsLoading(false);

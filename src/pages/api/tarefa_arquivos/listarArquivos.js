@@ -63,7 +63,7 @@ const handler = async (req, res) => {
 
         return res.status(200).json(defaultResponse('Segue arquivos', data));
     } catch (error) {
-        console.log(error);
+        console.error(error);
         return res.status(500).json(defaultResponse());
     }
 };

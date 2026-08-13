@@ -120,7 +120,7 @@ const handler = async (req, res) => {
 
     } catch (error) {
         await client.query('ROLLBACK');
-        console.log(error);
+        console.error(error);
         if(isTriggerException(error.code)){
             return res.status(409).json(defaultResponse(error.message));
         }

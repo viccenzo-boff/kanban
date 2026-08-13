@@ -56,7 +56,7 @@ const handler = async (req, res) => {
         return res.status(201).json(defaultResponse('Coluna criada com sucesso', coluna.rows[0]));
 
     } catch (error) {
-        console.log(error);
+        console.error(error);
         return res.status(500).json(defaultResponse());
     }
 }

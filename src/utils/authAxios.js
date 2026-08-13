@@ -14,7 +14,7 @@ const authAxios = async (method, url, body = {}, customHeaders = {}, contentType
             }
         });
     } catch (error) {
-        console.log('Erro ao realizar request', error);
+        console.error('Erro ao realizar request', error);
     }
 };
 

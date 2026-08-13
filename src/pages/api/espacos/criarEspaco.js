@@ -53,7 +53,7 @@ const handler = async (req, res) => {
 
         return res.status(201).json(defaultResponse('Espaço criado', space));
     } catch (error) {
-        console.log(error);
+        console.error(error);
         return res.status(500).json(defaultResponse('Erro ao criar espaço'));;
     }
 };

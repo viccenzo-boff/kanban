@@ -10,7 +10,7 @@ const removeToken = () => {
 
         return true;
     } catch (error) {
-        console.log('Erro ao remover token');
+        console.error('Erro ao remover token');
         return false;
     }
 };
@@ -21,7 +21,7 @@ const setToken = (token) => {
 
         return true;
     } catch (error) {
-        console.log('Erro ao armazenar token');
+        console.error('Erro ao armazenar token');
         
         return false;
     }

@@ -36,7 +36,7 @@ export default function NovoUsuarioPage() {
       toast.success(res.data.mensagem);
       Router.push('/usuarios/login');
     } catch (error) {
-      console.log(error.response || error);
+      console.error(error.response || error);
       toast.error(error.response?.data?.mensagem || "Erro ao cadastrar usuário.");
     } finally {
       setIsLoading(false);

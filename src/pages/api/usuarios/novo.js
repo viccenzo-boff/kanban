@@ -83,7 +83,7 @@ const handler = async (req, res) => {
                 console.log('Espaço pessoal não foi criado!');
             }
         } catch (error) {
-            console.log('Erro ao criar espaço pessoal padrão:', error);
+            console.error('Erro ao criar espaço pessoal padrão:', error);
         }
 
         // Projeção explícita: `user` vem de um RETURNING * e carrega o hash da
@@ -97,7 +97,7 @@ const handler = async (req, res) => {
 
         return res.status(201).json(defaultResponse('Usuário criado com sucesso', usuarioCriado));
     } catch (error) {
-        console.log(error);
+        console.error(error);
         return res.status(500).json(defaultResponse('Erro ao criar usuário. Contate o suporte'));
     }
 };

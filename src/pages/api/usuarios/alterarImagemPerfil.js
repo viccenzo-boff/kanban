@@ -91,7 +91,7 @@ const handler = async (req, res) => {
         },
       });
     } catch (error) {
-      console.log('Erro ao salvar imagem de perfil no Opera', error?.response ?? error);
+      console.error('Erro ao salvar imagem de perfil no Opera', error?.response ?? error);
       return res.status(500).json(defaultResponse('Erro ao salvar imagem internamente. Contate o suporte!'));
     }
 
@@ -126,7 +126,7 @@ const handler = async (req, res) => {
 
     return res.status(200).json(defaultResponse('Imagem atualizada com sucesso', profile));
   } catch (error) {
-    console.log(error);
+    console.error(error);
     return res.status(500).json(defaultResponse('Erro interno ao salvar imagem de perfil'));
   }
 };

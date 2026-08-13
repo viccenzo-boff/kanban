@@ -70,7 +70,7 @@ const handler = async (req, res) => {
 
     return res.status(200).json(defaultResponse('Convite cancelado', cancelResult.rows[0]));
   } catch (error) {
-    console.log('Erro ao cancelar convite: ', error);
+    console.error('Erro ao cancelar convite: ', error);
     return res.status(500).json(defaultResponse('Erro ao cancelar convite. Contate o suporte!'));
   }
 };

@@ -19,7 +19,7 @@ const AuthProvider = ({ children}) => {
         } catch (error) {
             setIsAuthenticated(false);
             if(error?.response?.status !== 401) {
-                console.log('Erro ao checar autenticação:', error);
+                console.error('Erro ao checar autenticação:', error);
                 toast.error('Erro ao checar autenticação. Contate o suporte.');
             }
         } finally {
@@ -39,7 +39,7 @@ const AuthProvider = ({ children}) => {
             
             setIsAuthenticated(true);
         } catch (error) {
-            console.log('Erro ao realizar login:', error);
+            console.error('Erro ao realizar login:', error);
             toast.error('Erro ao realizar login. Contate o suporte.');
         } finally {
             setIsAuthLoading(false);
@@ -54,7 +54,7 @@ const AuthProvider = ({ children}) => {
 
             setIsAuthenticated(false); 
         } catch (error) {
-            console.log('Erro ao desconectar:', error);
+            console.error('Erro ao desconectar:', error);
             toast.error('Erro ao desconectar. Contate o suporte.');
         } finally {
             setIsAuthLoading(false);

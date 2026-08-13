@@ -64,7 +64,7 @@ const handler = async (req, res) => {
                     },
                 });
             } catch (error) {
-                console.log('Erro ao deletar arquivo no opera:', error?.response?.data?.message || 'Erro genérico');
+                console.error('Erro ao deletar arquivo no opera:', error?.response?.data?.message || 'Erro genérico');
             }
         }
 
@@ -79,7 +79,7 @@ const handler = async (req, res) => {
 
         return res.status(200).json(defaultResponse('Arquivo deletado com sucesso', arquivoDeletado.rows[0]));
     } catch (error) {
-        console.log(error);
+        console.error(error);
         return res.status(500).json(defaultResponse('Erro interno ao deletar arquivos'));
     }
 };

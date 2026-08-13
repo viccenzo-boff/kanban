@@ -22,7 +22,7 @@ const handler = async (req, res) => {
 
     return res.status(200).json(defaultResponse('Segue convite', convite));
   } catch (error) {
-    console.log('Erro ao buscar dados do convite: ', error);
+    console.error('Erro ao buscar dados do convite: ', error);
     return res.status(500).json(defaultResponse('Erro ao buscar dados do convite. Contate o suporte!'));
   }
 };

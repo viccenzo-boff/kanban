@@ -99,7 +99,7 @@ const handler = async (req, res) => {
 
     return res.status(200).json(defaultResponse('Convite respondido', conviteAtualizado));
   } catch (error) {
-    console.log('Erro ao aceitar convite: ', error);
+    console.error('Erro ao aceitar convite: ', error);
     await client.query('ROLLBACK');
     return res.status(500).json(defaultResponse('Erro ao aceitar convite. Contate o suporte!'));
   } finally {

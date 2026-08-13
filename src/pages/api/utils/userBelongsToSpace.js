@@ -51,7 +51,7 @@ const userBelongsToSpace = async (idEspaco, idUser) => {
             espaco: espaco,
         }
     } catch (error) {
-        console.log('Erro ao verificar permissões de usuário: ', error);
+        console.error('Erro ao verificar permissões de usuário: ', error);
         return {
             error: true,
             belongs: false,

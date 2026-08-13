@@ -37,10 +37,9 @@ jobs:
   security:
     name: Auditoria de dependencias
     runs-on: ubuntu-latest
-    # Nao bloqueia enquanto houver vulnerabilidades sem correcao disponivel sem
-    # breaking change. Um job que falha sempre treina todo mundo a ignorar o CI.
-    # Torne bloqueante assim que o backlog do next@16 for resolvido.
-    continue-on-error: true
+    # Bloqueante desde o upgrade para next@16, que zerou as 5 vulnerabilidades
+    # altas que so tinham correcao com breaking change. Com o backlog em zero,
+    # qualquer achado novo de nivel alto e regressao e deve derrubar o CI.
 
     steps:
       - uses: actions/checkout@v4

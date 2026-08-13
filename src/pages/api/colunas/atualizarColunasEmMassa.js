@@ -63,7 +63,7 @@ const handler = async (req, res) => {
 
         return res.status(200).json(defaultResponse('colunas atualizadas!'));
     } catch (error) {
-        console.log('Erro ao atualizar colunas em massa: ', error.message, error);
+        console.error('Erro ao atualizar colunas em massa: ', error.message, error);
 
         return res.status(500).json(defaultResponse('Erro interno de servidor ao atualizar colunas. Contate o suporte'));
     }

@@ -24,7 +24,7 @@ const publishEmail = async (value) => {
 
         return true;
     } catch (error) {
-        console.log('Erro ao publicar na fila: ', error);
+        console.error('Erro ao publicar na fila: ', error);
         
         return false;
     }
@@ -200,7 +200,7 @@ const handler = async (req, res) => {
 
         return res.status(201).json(defaultResponse('Convite criado', invite));
     } catch (error) {
-        console.log('Erro ao criar convite: ', error);
+        console.error('Erro ao criar convite: ', error);
         await client.query('ROLLBACK');
         return res.status(500).json(defaultResponse('Erro ao criar convite. Contate o suporte!'));
     } finally {

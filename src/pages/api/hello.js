@@ -18,7 +18,7 @@ const handler = async (req, res) => {
 
     res.status(200).json(defaultResponse("The API os ok :)"));
   } catch (error) {
-    console.log(error);
+    console.error(error);
     return res.status(500).json(defaultResponse());
   }
 }

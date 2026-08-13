@@ -75,7 +75,7 @@ const handler = async (req, res) => {
 
         return res.status(200).json(defaultResponse('Tarefas atualizadas!'));
     } catch (error) {
-        console.log('Erro ao atualizar tarefas em massa: ', error.message, error);
+        console.error('Erro ao atualizar tarefas em massa: ', error.message, error);
 
         return res.status(500).json(defaultResponse('Erro interno de servidor ao atualizar tarefas. Contate o suporte'));
     }
