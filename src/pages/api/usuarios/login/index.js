@@ -23,14 +23,19 @@ const handler = async (req, res) => {
             db.query({ text: `SELECT * FROM usuario WHERE email = $1`, values: [login] }),
         ]);
 
-        const usernameFound = userByUsername.rows.length > 0;
-        const emailFound = userByEmail.rows.length > 0;
+        // A recusa acontece apenas quando nenhuma das duas buscas acha alguém.
+        // Comparar os dois booleanos entre si também recusava o caso em que as
+        // duas acham — `login` sendo o username de um usuário e o email de
+        // outro —, negando um login legítimo. Hoje isso é inalcançável, porque
+        // `isUsernameValid` restringe username a [A-Za-z0-9_] e `isEmailValid`
+        // exige `@`, então nenhuma string satisfaz os dois; a colisão volta a
+        // ser possível se essas regras mudarem ou se houver linha legada.
+        // Nesse caso o username decide, por ser o identificador mais restrito.
+        const user = userByUsername.rows[0] ?? userByEmail.rows[0] ?? null;
 
-        if(usernameFound === emailFound){
+        if(!user){
             return res.status(401).json(defaultResponse(MENSAGEM_ERRO));
         }
-
-        const user = usernameFound ? userByUsername.rows[0] : userByEmail.rows[0];
 
         const dbPassword = user.senha;
 
@@ -56,7 +61,7 @@ const handler = async (req, res) => {
         return res.status(200).json(defaultResponse('Login realizado', token));
 
     } catch (error) {
-        console.log('Erro inesperado ao realizar login', error);
+        console.error('Erro inesperado ao realizar login', error);
         
         return res.status(500).json(defaultResponse('Erro inesperado ao realizar login. Contate o suporte'));
     }
